@@ -14,10 +14,10 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation 'org.neo4j.driver:neo4j-java-driver:4.4.5'
-    implementation 'org.neo4j:neo4j-ogm-core:3.2.31'
-    implementation 'org.neo4j:neo4j-ogm-http-driver:3.2.31'
-    implementation 'org.neo4j:neo4j-ogm-bolt-driver:3.2.31'
-    implementation 'org.neo4j:neo4j-ogm-embedded-driver:3.2.31'
+    implementation 'org.neo4j:neo4j-ogm-core:3.2.32'
+    implementation 'org.neo4j:neo4j-ogm-http-driver:3.2.32'
+    implementation 'org.neo4j:neo4j-ogm-bolt-driver:3.2.32'
+    implementation 'org.neo4j:neo4j-ogm-embedded-driver:3.2.32'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'org.locationtech.jts:jts-core:1.18.2'
     implementation 'in.jlibs:jlibs-xmldog:3.0.1'
