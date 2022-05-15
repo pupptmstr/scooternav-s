@@ -4,6 +4,7 @@ import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import com.pupptmstr.scooternav_s.database.Neo4jSessionFactory
 import com.pupptmstr.scooternav_s.models.Element
+import com.pupptmstr.scooternav_s.models.PathQueryResult
 import com.pupptmstr.scooternav_s.models.Response
 import com.pupptmstr.scooternav_s.ogm.Node
 import io.ktor.client.*
@@ -16,18 +17,43 @@ import kotlinx.coroutines.withContext
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
+import java.util.*
 import kotlin.math.*
 
-fun main() = runBlocking {
+fun main(args: Array<String>) = runBlocking {
     val client = HttpClient(CIO.create {
         requestTimeout = 0
     }) {
         expectSuccess = false
     }
 
-    val body = getOverpassApiData(client, getAllPedestrianStreets())
     val factory = Neo4jSessionFactory()
-    fillDatabaseWithApiGeoData(body, factory)
+
+    if (args.toList().contains("--prepare")) {
+        val body = getOverpassApiData(client, getAllPedestrianStreets())
+        fillDatabaseWithApiGeoData(body, factory)
+    }
+
+    var stillWorks = true
+
+    while (stillWorks) {
+        print("First node id:")
+        val node1 = readln()
+        print("Second node id:")
+        val node2 = readln()
+        val result = getShortestWay(node1.toLong(), node2.toLong(), factory)
+        if (result != null) {
+            println("Way from $node1 to $node2. Total length = ${result.totalLength}")
+            println("Full path: ${result.path.map { it.id }}")
+            println("There are ${result.path.lastIndex+1} nodes in path.")
+        } else {
+            println("Path not found!")
+        }
+        println("Need more? (no to stop)")
+        val ans = readln()
+        if (ans == "no")
+            stillWorks = false
+    }
 
 }
 
@@ -111,8 +137,9 @@ fun fillDatabaseWithApiGeoData(data: Array<Element>, factory: Neo4jSessionFactor
         println("Added all Ways. Totally was added $countAddedElements Ways.")
         println("Started saving Ways...")
         session.save(nodes.values, 5)
-        println("Saved all Ways, now database is ready.")
-
+        println("Saved all Ways. Creating gds graph")
+        session.query(createGDSGraph(), mutableMapOf<String, Objects>())
+        println("Created gds graph. Now database is ready")
     } else {
         println("Database Session is null, can't work")
     }
@@ -141,3 +168,31 @@ fun getWayLength(nodeStart: Node, nodeEnd: Node): Double {
 
     return ad * earthRadius
 }
+
+fun getShortestWay(id1: Long, id2: Long, factory: Neo4jSessionFactory): PathQueryResult? {
+    val session = factory.getNeo4jSession()
+    if (session != null) {
+        val queryResult = session.query(getShortestWayCypher(id1, id2), mapOf<String, Objects>()).queryResults()
+        val totalLength: Double
+        val path: List<Node>
+        val lengths: Array<Double>
+        if (queryResult.iterator().hasNext()) {
+            val next = queryResult.iterator().next()
+            totalLength = next["totalCost"] as Double
+            path = next["path"] as List<Node>
+            lengths = next["costs"] as Array<Double>
+        } else {
+            return null
+        }
+        return PathQueryResult(path, lengths, totalLength)
+    } else {
+        println("Database Session is null, can't work")
+        return null
+    }
+    //334409
+    //9724356897
+
+    //4317659966
+    //7346426129
+}
+
