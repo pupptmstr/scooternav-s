@@ -1,5 +1,6 @@
 package com.pupptmstr.scooternav_s.ogm
 
+import com.pupptmstr.scooternav_s.ogm.Node
 import org.neo4j.ogm.annotation.*
 
 @RelationshipEntity(type = "WAY")

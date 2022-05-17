@@ -1,4 +1,4 @@
-package com.pupptmstr.scooternav_s.models
+package com.pupptmstr.scooternav_s.map.models.osm
 
 import com.pupptmstr.scooternav_s.ogm.Node
 

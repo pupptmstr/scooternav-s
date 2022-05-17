@@ -1,4 +1,4 @@
-package com.pupptmstr.scooternav_s.database
+package com.pupptmstr.scooternav_s.map
 
 import org.neo4j.ogm.config.Configuration
 import org.neo4j.ogm.session.Session

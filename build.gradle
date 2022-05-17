@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.6.20'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.21'
     id 'java'
 }
 
@@ -14,18 +14,25 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation 'org.neo4j.driver:neo4j-java-driver:4.4.5'
-    implementation 'org.neo4j:neo4j-ogm-core:3.2.32'
-    implementation 'org.neo4j:neo4j-ogm-http-driver:3.2.32'
-    implementation 'org.neo4j:neo4j-ogm-bolt-driver:3.2.32'
-    implementation 'org.neo4j:neo4j-ogm-embedded-driver:3.2.32'
+    implementation 'org.neo4j:neo4j-ogm-core:3.2.33'
+    implementation 'org.neo4j:neo4j-ogm-http-driver:3.2.33'
+    implementation 'org.neo4j:neo4j-ogm-bolt-driver:3.2.33'
+    implementation 'org.neo4j:neo4j-ogm-embedded-driver:3.2.33'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'org.locationtech.jts:jts-core:1.18.2'
     implementation 'in.jlibs:jlibs-xmldog:3.0.1'
-    implementation "io.ktor:ktor-client-core:2.0.0"
-    implementation "io.ktor:ktor-client-cio:2.0.0"
-    implementation "io.ktor:ktor-serialization:2.0.0"
-    implementation "io.ktor:ktor-client-serialization:2.0.0"
-    implementation "io.ktor:ktor-client-gson:2.0.0"
+    implementation 'io.ktor:ktor-client-core:2.0.1'
+    implementation 'io.ktor:ktor-client-cio:2.0.1'
+    implementation 'io.ktor:ktor-serialization:2.0.1'
+    implementation 'io.ktor:ktor-client-serialization:2.0.1'
+    implementation 'io.ktor:ktor-client-gson:2.0.1'
+    implementation 'io.ktor:ktor-server:2.0.1'
+    implementation 'io.ktor:ktor-server-auth:2.0.1'
+    implementation 'io.ktor:ktor-server-auth-jwt:2.0.1'
+    implementation 'io.ktor:ktor-server-locations:2.0.1'
+    implementation 'io.ktor:ktor-serialization-gson:2.0.1'
+    implementation 'io.ktor:ktor-server-netty:2.0.1'
+    implementation"ch.qos.logback:logback-classic:1.2.11"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'

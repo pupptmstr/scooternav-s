@@ -1,5 +1,6 @@
 package com.pupptmstr.scooternav_s.ogm;
 
+import com.pupptmstr.scooternav_s.ogm.Way;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;

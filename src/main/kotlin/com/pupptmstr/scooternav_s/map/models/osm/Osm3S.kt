@@ -1,4 +1,4 @@
-package com.pupptmstr.scooternav_s.models
+package com.pupptmstr.scooternav_s.map.models.osm
 
 data class Osm3S(
     val timestamp_osm_base : String,
