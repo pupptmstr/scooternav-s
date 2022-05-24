@@ -25,12 +25,14 @@ dependencies {
     implementation 'io.ktor:ktor-client-cio:2.0.1'
     implementation 'io.ktor:ktor-serialization:2.0.1'
     implementation 'io.ktor:ktor-client-serialization:2.0.1'
+    implementation "io.ktor:ktor-serialization-gson:2.0.1"
     implementation 'io.ktor:ktor-client-gson:2.0.1'
     implementation 'io.ktor:ktor-server:2.0.1'
     implementation 'io.ktor:ktor-server-auth:2.0.1'
     implementation 'io.ktor:ktor-server-auth-jwt:2.0.1'
     implementation 'io.ktor:ktor-server-locations:2.0.1'
     implementation 'io.ktor:ktor-serialization-gson:2.0.1'
+    implementation "io.ktor:ktor-server-websockets:2.0.1"
     implementation 'io.ktor:ktor-server-netty:2.0.1'
     implementation"ch.qos.logback:logback-classic:1.2.11"
 
