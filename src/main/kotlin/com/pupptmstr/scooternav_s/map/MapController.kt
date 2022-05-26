@@ -33,7 +33,7 @@ class MapController() {
         val gson =
             builder.setPrettyPrinting().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
         val bodyAsString = response.body<String>()
-        writeResponseToFile("response-murino.json", bodyAsString)
+//        writeResponseToFile("response-murino.json", bodyAsString)
         println("Wrote response to file.")
         val responseDataAsObject = gson.fromJson(bodyAsString, Response::class.java)
         println("Get all data as objects, starting enter data into the database...")

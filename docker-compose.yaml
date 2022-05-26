@@ -21,3 +21,10 @@ services:
       - NEO4J_dbms_security_procedures_whitelist=gds.*,apoc.*
       - NEO4JLABS_PLUGINS=["apoc", "graph-data-science"]
       - NEO4J_AUTH=neo4j/test
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "4115:4115"
+    depends_on:
+      - neo4j
