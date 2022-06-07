@@ -1,11 +1,9 @@
 package com.pupptmstr.scooternav_s.map
 
+import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
-import com.pupptmstr.scooternav_s.client_manager.ClientsManager
-import com.pupptmstr.scooternav_s.client_manager.DataWebsocketMessage
-import com.pupptmstr.scooternav_s.client_manager.RequestPathWebsocketMessage
-import com.pupptmstr.scooternav_s.client_manager.WebsocketMessage
-import com.pupptmstr.scooternav_s.map.models.api.PathRequest
+import com.pupptmstr.scooternav_s.client_manager.*
+import com.pupptmstr.scooternav_s.map.models.api.Coordinates
 import io.ktor.client.*
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -21,27 +19,51 @@ fun Route.mapApi(
     client: HttpClient,
     clientsManager: ClientsManager
 ) {
+    val gson = GsonBuilder().setPrettyPrinting().serializeNulls()
+        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
+
     route("/map") {
 
-        post("/path") {
-            val pathRequest = call.receive<PathRequest>()
-            val res = controller.getShortestWay(pathRequest.nodeFrom, pathRequest.nodeTo, databaseFactory)
-            if (res != null) {
-                call.respond(HttpStatusCode.OK, res)
-            } else {
-                call.respond(HttpStatusCode.BadRequest)
+        route("/path") {
+            get("/{coords}") {
+                val parameters = call.parameters["coords"]
+                try {
+                    val coords = parameters?.split(";")
+                    val cords1 = coords?.get(0)?.split(",")
+                    val cords2 = coords?.get(1)?.split(",")
+                    val lon1 = cords1!![0]
+                    val lat1 = cords1[1]
+                    val lon2 = cords2!![0]
+                    val lat2 = cords2[1]
+                    val nodeFrom = Coordinates(lat1.toDouble(), lon1.toDouble())
+                    val nodeTo = Coordinates(lat2.toDouble(), lon2.toDouble())
+                    val res = controller.getPath(nodeFrom, nodeTo, databaseFactory)
+                    if (res != null) {
+                        call.respond(HttpStatusCode.OK, res)
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest)
+                    }
+
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
             }
         }
 
         get("/prepare") {
-            controller.prepareDatabase(client, databaseFactory)
+            controller.prepareDatabase(client, databaseFactory, true)
             call.respond(HttpStatusCode.OK)
+        }
+
+        post("/nearest") {
+            val coords = call.receive<Coordinates>()
+            val res = controller.getNearestNode(coords, databaseFactory)
+            call.respond(Coordinates(res.lat, res.lon))
         }
 
     }
 
     route("/client") {
-
         webSocket {
             this.pingInterval = null
             val id = clientsManager.getUniqueID()
@@ -49,40 +71,24 @@ fun Route.mapApi(
                 for (frame in incoming) {
                     if (frame is Frame.Text) {
                         val message = frame.readText()
-                        var clientMessage: WebsocketMessage? = null
                         try {
-                            val gson = GsonBuilder().create()
-                            val dataMessage = gson.fromJson(message, DataWebsocketMessage::class.java)
-                            clientMessage = dataMessage
+                            clientsManager.writeClientData(
+                                gson.fromJson(message, DataWebSocketMessage::class.java),
+                                controller,
+                                databaseFactory
+                            )
                         } catch (e: Exception) {
-                            try {
-                                val gson = GsonBuilder().create()
-                                val dataMessage = gson.fromJson(message, RequestPathWebsocketMessage::class.java)
-                                clientMessage = dataMessage
-                            } catch (e: Exception) {
-                                clientsManager.loginNewClientSession(id, this)
-                            }
+                            println("login new client")
+                            clientsManager.loginNewClientSession(id, this)
                         }
 
-                        when (clientMessage) {
-                            is DataWebsocketMessage -> {
-                                clientsManager.writeClientData(clientMessage.averageSpeed, clientMessage.wayId, id)
-                            }
-                            is RequestPathWebsocketMessage -> {
-                                clientsManager.getPath(
-                                    clientMessage.nodeIdFrom,
-                                    clientMessage.nodeIdTo,
-                                    controller,
-                                    databaseFactory
-                                )
-                            }
-                        }
                     }
                 }
             } catch (e: Exception) {
                 println(e.localizedMessage)
             } finally {
                 clientsManager.endClientSession(id)
+                println("finishing client id")
             }
         }
 

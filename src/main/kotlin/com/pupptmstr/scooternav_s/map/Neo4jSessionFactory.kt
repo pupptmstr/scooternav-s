@@ -5,7 +5,8 @@ import org.neo4j.ogm.session.Session
 import org.neo4j.ogm.session.SessionFactory
 
 class Neo4jSessionFactory() {
-    private val config = Configuration.Builder().credentials("neo4j", "test").uri("bolt://neo4j:4112").connectionPoolSize(50).build()
+//    private val config = Configuration.Builder().credentials("neo4j", "test").uri("bolt://neo4j:7687").connectionPoolSize(50).build()
+    private val config = Configuration.Builder().credentials("neo4j", "test").uri("bolt://localhost:4112").connectionPoolSize(50).build()
     private val sessionFactory: SessionFactory = SessionFactory(config, "com.pupptmstr.scooternav_s.ogm")
 
     fun getNeo4jSession(): Session? {

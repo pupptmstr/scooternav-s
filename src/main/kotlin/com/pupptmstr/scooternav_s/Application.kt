@@ -16,6 +16,9 @@ import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.slf4j.event.Level
 
 fun main(args: Array<String>): Unit = EngineMain.main(args)
@@ -25,7 +28,7 @@ fun Application.configure() {
     install(ContentNegotiation) {
         gson {
             setPrettyPrinting()
-            setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+            setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             serializeNulls()
         }
     }
@@ -56,6 +59,10 @@ fun Application.configure() {
         expectSuccess = false
     }
 
+    CoroutineScope(Dispatchers.IO).launch {
+        println("Preparing data")
+        mapController.prepareDatabase(httpClient, databaseFactory, false)
+    }
 
     routing {
         route("/api/v1") {

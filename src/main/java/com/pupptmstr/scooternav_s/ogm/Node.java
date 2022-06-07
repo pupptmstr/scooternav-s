@@ -6,6 +6,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @NodeEntity
@@ -32,9 +33,17 @@ public class Node {
         this.highway = highway;
     }
 
-    public void waysTo(Node node, Long wayId, double averageSpeed, int bandwidth, String highway, String surface, double length) {
+    public void waysTo(
+            Node node,
+            long wayId,
+            double averageSpeed,
+            int bandwidth,
+            String highway,
+            double surfaceMultiplier,
+            double length,
+            double preference) {
         String fullWayId = wayId + "+" + this.id + "+" + node.id;
-        Way way = new Way(this, node, fullWayId, averageSpeed, bandwidth, highway, surface, length);
+        Way way = new Way(this, node, fullWayId, averageSpeed, bandwidth, highway, surfaceMultiplier, length, preference);
         ways.add(way);
     }
 
@@ -60,5 +69,37 @@ public class Node {
 
     public Set<Way> getWays() {
         return ways;
+    }
+
+    public int getLatitudeE6() {
+        return (int) (this.getLat() * 1E6);
+    }
+
+    public int getLongitudeE6() {
+        return (int) (this.getLon() * 1E6);
+    }
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "id=" + id +
+                ", lat=" + lat +
+                ", lon=" + lon +
+                ", amenity='" + amenity + '\'' +
+                ", highway='" + highway + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Node node = (Node) o;
+        return id == node.id && Double.compare(node.lat, lat) == 0 && Double.compare(node.lon, lon) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, lat, lon);
     }
 }
