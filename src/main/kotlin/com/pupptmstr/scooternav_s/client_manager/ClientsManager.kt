@@ -11,7 +11,7 @@ class ClientsManager {
 
     private val clients: MutableMap<String, WebSocketServerSession> = Collections.synchronizedMap(mutableMapOf())
 
-    fun writeClientData(
+    suspend fun writeClientData(
         clientData: DataWebSocketMessage,
         mapController: MapController,
         factory: Neo4jSessionFactory,

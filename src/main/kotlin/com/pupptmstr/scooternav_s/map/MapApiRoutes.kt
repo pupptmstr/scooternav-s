@@ -2,7 +2,8 @@ package com.pupptmstr.scooternav_s.map
 
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
-import com.pupptmstr.scooternav_s.client_manager.*
+import com.pupptmstr.scooternav_s.client_manager.ClientsManager
+import com.pupptmstr.scooternav_s.client_manager.DataWebSocketMessage
 import com.pupptmstr.scooternav_s.map.models.api.Coordinates
 import io.ktor.client.*
 import io.ktor.http.*
@@ -12,6 +13,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 fun Route.mapApi(
     controller: MapController,
@@ -72,11 +76,13 @@ fun Route.mapApi(
                     if (frame is Frame.Text) {
                         val message = frame.readText()
                         try {
-                            clientsManager.writeClientData(
-                                gson.fromJson(message, DataWebSocketMessage::class.java),
-                                controller,
-                                databaseFactory
-                            )
+                            CoroutineScope(Dispatchers.IO).launch {
+                                clientsManager.writeClientData(
+                                    gson.fromJson(message, DataWebSocketMessage::class.java),
+                                    controller,
+                                    databaseFactory
+                                )
+                            }
                         } catch (e: Exception) {
                             println("login new client")
                             clientsManager.loginNewClientSession(id, this)
