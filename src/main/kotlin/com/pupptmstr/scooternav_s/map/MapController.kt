@@ -152,7 +152,7 @@ class MapController() {
         }
     }
 
-    fun saveNodesAndValues(session: Session, depth: Int = 5) {
+    fun saveNodesAndValues(session: Session, depth: Int = 3) {
         session.save(nodes.values, depth)
     }
 
@@ -190,20 +190,7 @@ class MapController() {
 
 
     fun getNearestNode(node: Coordinates, factory: Neo4jSessionFactory): Node {
-        val session = factory.getNeo4jSession()
-        if (session != null) {
-            val queryResult =
-                session.query(getClosestNodeCypher(node.lat, node.lon), mapOf<String, Objects>()).queryResults()
-            if (queryResult.iterator().hasNext()) {
-                val next = queryResult.iterator().next()
-                val res = next["n"] as Node
-                println("__________________________________________________")
-                println(res)
-                println("__________________________________________________")
-                return next["n"] as Node
-            }
-        }
-        return Node(0, 0.0, 0.0, "", "")
+        return nodes.values.sortedBy { getWayLength(it, Node(0, node.lat, node.lon, "", "")) }[0]
     }
 
     fun getPath(
